@@ -11,6 +11,7 @@
 int searchCaptures(int alpha, int beta, int ply) { // TODO maybe record somehow these values too?
     if (stopSearch) return UNKNOWN_EVAL;
     nodeCount++;
+
     int curr_eval = eval();
     if (curr_eval >= beta) return beta;
     if (alpha < curr_eval) alpha = curr_eval;
@@ -18,15 +19,21 @@ int searchCaptures(int alpha, int beta, int ply) { // TODO maybe record somehow 
     move moves[200];
     unsigned int moveCount = movegen::generate_moves(moves, true);
 
+    // move ordering
     orderMoves(moves, moveCount);
+
     for (int i = 0; i < moveCount; i++) {
+
         b.makeMove(moves[i]);
         int score = -searchCaptures(-beta, -alpha, ply + 1);
         b.undoMove();
+
         if (stopSearch) return UNKNOWN_EVAL;
         if (score >= beta) return beta;
         if (score > alpha) alpha = score;
+
     }
+
     return alpha;
 }
 
@@ -103,17 +110,25 @@ int search(unsigned int depth, int alpha, int beta, int ply) {
 
 move searchRoot(unsigned int depth) {
     nodeCount = 1;
-    move moves[200];
-    unsigned int moveCount = movegen::generate_moves(moves, false);
-    orderMoves(moves, moveCount);
     move bestMove;
     int bestEval = INT32_MIN;
+
+    move moves[200];
+    unsigned int moveCount = movegen::generate_moves(moves, false);
+
+    // move ordering
+    orderMoves(moves, moveCount);
+
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
     for (int i = 0; i < moveCount; i++) {
+
         b.makeMove(moves[i]);
         int e = -search(depth, -INF, INF, 1);
         b.undoMove();
+
         if (stopSearch) return {};
+
         if (e > bestEval) {
             bestEval = e;
             bestMove = moves[i];
@@ -121,20 +136,49 @@ move searchRoot(unsigned int depth) {
     }
 
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
     // currently only supports one move
     std::string pvLine = bestMove.str();
+
+    // providing statistics to the GUI
     long long milli = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
     long long nps = milli == 0 ? 0 : nodeCount / milli * 1000;
+
     std::string scoreStr = "score ";
-    int mateDistance = std::abs(std::abs(bestEval)-MATE_SCORE)/2+1; // TODO fix this
+
+    int mateDistance = std::abs(std::abs(bestEval) - MATE_SCORE) / 2 + 1; // TODO fix this
+
     if (mateDistance < 100) {
         scoreStr += "mate " + std::to_string(mateDistance);
     } else {
         scoreStr += "cp " + std::to_string(bestEval);
     }
+
     uci::out("info",
-             {"depth", std::to_string(depth), "nodes", std::to_string(nodeCount), scoreStr,
+             {"maxDepth", std::to_string(depth), "nodes", std::to_string(nodeCount), scoreStr,
               "time",
               std::to_string(milli), "nps", std::to_string(nps), "pv", pvLine});
+
     return bestMove;
+}
+
+void iterativeDeepening(unsigned int maxDepth) {
+    stopSearch = false;
+    move bestMove;
+
+    for (unsigned int depth = 1; depth <= maxDepth; depth++) {
+        move pvMove = searchRoot(depth);
+
+        if (stopSearch) {
+            break;
+        }
+
+        if (!pvMove.isNULL()) {
+            bestMove = pvMove;
+        }
+    }
+
+    stopSearch = true;
+
+    uci::out("bestmove", {bestMove.str()});
 }

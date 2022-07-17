@@ -152,7 +152,7 @@ bitboard bitboard::step(Direction dir) {
             return {(bb & notFileH) << 9};
 
     }
-    return bitboard();
+    return {};
 }
 
 bitboard bitboard::operator-(const bitboard &a) const {

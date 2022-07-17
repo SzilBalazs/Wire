@@ -7,6 +7,6 @@
 
 #include "move.h"
 
-void orderMoves(move *moves, unsigned int movecnt);
+void orderMoves(move *moves, unsigned int moveCount);
 
 #endif //CHESS_MOVE_ORDERING_H
