@@ -92,10 +92,10 @@ void board::clearPosition() {
     castle_rights.push(0);
     wking = 64;
     bking = 64;
-    hash = 0;
     for (int ind = 0; ind < 64; ind++) {
         clearSquare(ind);
     }
+    hash = 0;
 }
 
 void board::loadPositionFromFEN(std::string fen) { // NOT CHECKING FOR VALIDITY -> TODO check for validity
@@ -135,7 +135,7 @@ void board::loadPositionFromFEN(std::string fen) { // NOT CHECKING FOR VALIDITY 
         ind += 2;
         ep.top() = -1;
     }
-
+    hashHistory.emplace_back(getHash());
     // TODO read halfmove counter and fullmove counter
 }
 
@@ -251,8 +251,8 @@ void board::makeMove(move m) {
     if (counter >= 3) {
         status = DRAW;
     }
-
     hashHistory.emplace_back(getHash());
+    if (status == DRAW) std::cout << "draw" << std::endl;
 }
 
 void board::undoMove() {
