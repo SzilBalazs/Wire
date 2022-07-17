@@ -29,6 +29,12 @@ namespace movegen {
 
     bitboard kingAttacks(unsigned int);
 
+    bitboard getFileMaskEx(unsigned int);
+
+    bitboard getFileMask(unsigned int);
+
+    bitboard getRayMask(unsigned int, Direction);
+
     void update_general_data();
 
     void update_checks();

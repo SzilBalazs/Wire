@@ -44,7 +44,7 @@ namespace uci {
         unsigned int remainingTime = (b.stm == WHITE ? wTime : bTime);
         std::thread searchStopThread;
         if (remainingTime != 0) {
-            unsigned int searchLength = remainingTime/(nextTimeControl+5);
+            unsigned int searchLength = remainingTime/(nextTimeControl+2);
             searchStopThread = std::thread(waitAndStopSearch, searchLength);
         }
 

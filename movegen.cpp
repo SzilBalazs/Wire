@@ -456,6 +456,18 @@ bitboard movegen::pawnAttacks(unsigned int sq, Color color)  {
     return pawnAttackTable[sq][color];
 }
 
+bitboard movegen::getFileMask(unsigned int sq) {
+    return fileMask[sq];
+}
+
+bitboard movegen::getFileMaskEx(unsigned int sq) {
+    return fileMaskEx[sq];
+}
+
+bitboard movegen::getRayMask(unsigned int sq, Direction direction) {
+    return rayMasks[direction][sq];
+}
+
 bitboard movegen::fileAttacks(unsigned int sq) {
     // The math behind these this functions was taken from https://www.chessprogramming.org/Hyperbola_Quintessence
     bitboard attacks(b.occupied & fileMaskEx[sq]);

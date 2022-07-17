@@ -16,7 +16,7 @@ public:
 
     bitboard(U64);
 
-    unsigned int pop_cnt();
+    int pop_cnt();
 
     bool get(unsigned int) const;
 

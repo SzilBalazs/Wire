@@ -22,6 +22,7 @@
 #define rank7 0xff000000000000ULL
 #define notRank7 0xff00ffffffffffffULL
 #define rank8 0xff00000000000000ULL
+#define centrum 0x1818000000ULL
 
 const std::string ENGINE_NAME = "Wire";
 const std::string AUTHOR = "SzilBalazs";

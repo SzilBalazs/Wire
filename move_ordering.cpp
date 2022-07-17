@@ -10,7 +10,7 @@
 #include "move_ordering.h"
 #include "transposition_table.h"
 
-int basePieceValues[6] = {90, 500, 260, 300, 900};
+int basePieceValues[6] = {100, 600, 370, 380, 1050};
 
 void orderMoves(move *moves, unsigned int moveCount) {
     std::vector<std::pair<int, move>> move_list(moveCount);
