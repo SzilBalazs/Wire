@@ -170,7 +170,7 @@ void board::movePiece(unsigned int from, unsigned int to, Piece p, Color c) {
 }
 
 void board::makeMove(move m) {
-    updateHash();
+    updateHash(); // we remove castle rights, ep, and stm from the hash
     ep.push(-1);
     castle_rights.push(castle_rights.top());
 
@@ -237,22 +237,20 @@ void board::makeMove(move m) {
     }
     moves.push(m);
     stm = op;
-    updateHash();
 
     // check for repetition
     unsigned int counter=1;
-    if (!hashHistory.empty()) {
-        for (U64 i : hashHistory) {
-            if (i == hash) {
-                counter++;
-            }
+    for (U64 i : hashHistory) { // TODO speed this up
+        if (i == hash) {
+            counter++;
         }
     }
     if (counter >= 3) {
         status = DRAW;
     }
+
     hashHistory.emplace_back(getHash());
-    if (status == DRAW) std::cout << "draw" << std::endl;
+    updateHash(); // we only add them back after repetition check because they don't have to be the same
 }
 
 void board::undoMove() {
