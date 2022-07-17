@@ -155,7 +155,7 @@ move searchRoot(unsigned int depth) {
     }
 
     uci::out("info",
-             {"maxDepth", std::to_string(depth), "nodes", std::to_string(nodeCount), scoreStr,
+             {"depth", std::to_string(depth), "nodes", std::to_string(nodeCount), scoreStr,
               "time",
               std::to_string(milli), "nps", std::to_string(nps), "pv", pvLine});
 
