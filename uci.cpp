@@ -10,7 +10,7 @@
 namespace uci {
 
     bool debugMode;
-    unsigned int depth, wtime, btime, movestogo;
+    unsigned int maxDepth, wtime, btime, movestogo;
 
     void out(std::string cmd) {
         std::cout << cmd << "\n";
@@ -25,7 +25,7 @@ namespace uci {
     }
 
     void init() {
-        hash_init();
+        hashInit();
         movegen::init();
     }
 
@@ -43,17 +43,9 @@ namespace uci {
     void go() {
         unsigned int searchLength = 300;
         std::thread searchStopThread(waitAndStopSearch, searchLength);
-        stopSearch = false;
-        move bestMove;
-        for (unsigned int i=1;i<=depth;i++) {
-            move m = searchRoot(i);
-            if (stopSearch)
-                break;
-            if (!m.isNULL())
-                bestMove = m;
-        }
-        stopSearch = true;
-        out("bestmove", {bestMove.str()});
+
+        iterativeDeepening(maxDepth);
+
         if (searchStopThread.joinable())
             searchStopThread.join();
     }
@@ -141,28 +133,24 @@ namespace uci {
                 std::string line;
                 std::getline(std::cin, line);
                 ss << line;
-                depth=100, wtime=0, btime=0, movestogo=1000;
+                maxDepth=100, wtime=0, btime=0, movestogo=1000;
                 while (ss) {
                     std::string token;
                     ss >> token;
                     logMessage(token);
                     if (token.empty()) break;
                     else if (token == "depth") {
-                        ss >> depth;
-                    }
-                    else if (token == "infinite") {
-                        depth = 100;
-                    }
-                    else if (token == "wtime") {
+                        ss >> maxDepth;
+                    } else if (token == "infinite") {
+                        maxDepth = 1000;
+                    } else if (token == "wtime") {
                         ss >> wtime;
-                    }
-                    else if (token == "btime") {
+                    } else if (token == "btime") {
                         ss >> btime;
                     } else if (token == "movestogo") {
                         ss >> movestogo;
                     }
                 }
-                logMessage("Search started!");
                 searchThread = std::thread(go);
             } else if (cmd == "stop") {
                 stopSearch = true;

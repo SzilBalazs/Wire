@@ -10,7 +10,7 @@
 #ifndef CHESS_BOARD_H
 #define CHESS_BOARD_H
 
-void hash_init();
+void hashInit();
 
 class board {
 private:
@@ -20,9 +20,9 @@ private:
 
     std::stack<unsigned int> lastIrreversibleMove;
 
-    void setSq(Color, Piece, unsigned int);
+    void setSquare(Color color, Piece piece, unsigned int index);
 
-    void clearSq(unsigned int);
+    void clearSquare(unsigned int);
 
     void movePiece(unsigned int, unsigned int);
 
@@ -66,7 +66,7 @@ public:
 
     void undoMove();
 
-    U64 getHash();
+    U64 getHash() const;
 };
 
 #endif //CHESS_BOARD_H

@@ -8,7 +8,7 @@ U64 epRandTable[64];
 U64 castleRandTable[4];
 U64 sideRandTable[2];
 
-void hash_init() {
+void hashInit() {
     std::random_device rd;
     std::mt19937 mt(rd());
     std::uniform_int_distribution<U64> dist(0, (1ULL << 63) + 1);
@@ -22,12 +22,12 @@ void hash_init() {
         epRandTable[sq] = dist(mt);
     }
 
-    for (unsigned int i=0;i<4;i++) {
-        castleRandTable[i] = dist(mt);
+    for (U64 & i : castleRandTable) {
+        i = dist(mt);
     }
 
-    for (unsigned int i=0;i<2;i++) {
-        sideRandTable[i] = dist(mt);
+    for (U64 & i : sideRandTable) {
+        i = dist(mt);
     }
 }
 
@@ -49,9 +49,8 @@ void board::updateHash() {
     else hash ^= sideRandTable[1];
 }
 
-void board::setSq(Color color, Piece piece, unsigned int index) {
-    if (colors[index] != COLOR_EMPTY) clearSq(index);
-
+void board::setSquare(Color color, Piece piece, unsigned int index) {
+    if (colors[index] != COLOR_EMPTY) clearSquare(index);
 
     colors[index] = color;
     pieces[index] = piece;
@@ -66,17 +65,19 @@ void board::setSq(Color color, Piece piece, unsigned int index) {
     hash ^= pieceRandTable[index][color][piece];
 }
 
-void board::clearSq(unsigned int index) {
+void board::clearSquare(unsigned int index) {
     if (colors[index] != COLOR_EMPTY) {
         hash ^= pieceRandTable[index][colors[index]][pieces[index]];
     }
+
     for (unsigned int i=0;i<6;i++) {
         pieceBB[i].clear(index);
     }
-    allPieceBB[0].clear(index);
-    allPieceBB[1].clear(index);
+
     colors[index] = COLOR_EMPTY;
     pieces[index] = PIECE_EMPTY;
+    allPieceBB[0].clear(index);
+    allPieceBB[1].clear(index);
 }
 
 void board::clearPosition() {
@@ -93,7 +94,7 @@ void board::clearPosition() {
     bking = 64;
     hash = 0;
     for (int ind = 0; ind < 64; ind++) {
-        clearSq(ind);
+        clearSquare(ind);
     }
 }
 
@@ -107,7 +108,7 @@ void board::loadPositionFromFEN(std::string fen) { // NOT CHECKING FOR VALIDITY 
         } else if (c == '/') {
             index -= 16;
         } else if (('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c)){
-            setSq(charToColor(c), charToPiece(c), index);
+            setSquare(charToColor(c), charToPiece(c), index);
             index++;
         }
     }
@@ -154,18 +155,18 @@ void board::displayBoard() {
 }
 
 void board::movePiece(unsigned int from, unsigned int to) { // This is faster, use this if you can
-    setSq(colors[from], pieces[from], to);
-    clearSq(from);
+    setSquare(colors[from], pieces[from], to);
+    clearSquare(from);
 }
 
 void board::movePiece(unsigned int from, unsigned int to, Piece p) {
-    setSq(stm, p, to);
-    clearSq(from);
+    setSquare(stm, p, to);
+    clearSquare(from);
 }
 
 void board::movePiece(unsigned int from, unsigned int to, Piece p, Color c) {
-    setSq(c, p, to);
-    clearSq(from);
+    setSquare(c, p, to);
+    clearSquare(from);
 }
 
 void board::makeMove(move m) {
@@ -192,7 +193,7 @@ void board::makeMove(move m) {
         movePiece(m.getFrom(), m.getTo(), p);
     } else if (b && !c && d) { // en passant
         movePiece(m.getFrom(), m.getTo());
-        clearSq(m.getTo() + (stm == WHITE ? -8 : 8));
+        clearSquare(m.getTo() + (stm == WHITE ? -8 : 8));
     } else if (!b && !c && d) { // double pawn push
         movePiece(m.getFrom(), m.getTo());
         ep.top() = m.getTo() + (stm == WHITE ? -8 : 8);
@@ -241,8 +242,8 @@ void board::makeMove(move m) {
     // check for repetition
     unsigned int counter=1;
     if (!hashHistory.empty()) {
-        for (unsigned int i=0;i<hashHistory.size();i++) {
-            if (hashHistory[i] == hash) {
+        for (U64 i : hashHistory) {
+            if (i == hash) {
                 counter++;
             }
         }
@@ -269,7 +270,7 @@ void board::undoMove() {
         movePiece(m.getTo(), m.getFrom(), PAWN, op);
     } else if (b && !c && d) { // En passant
         movePiece(m.getTo(), m.getFrom());
-        setSq(stm, PAWN, m.getTo() + (op == WHITE ? -8 : 8));
+        setSquare(stm, PAWN, m.getTo() + (op == WHITE ? -8 : 8));
     } else if (!b && c && !d) {
         if (op == WHITE) {
             movePiece(6, 4); // king
@@ -292,7 +293,7 @@ void board::undoMove() {
 
 
     if (b && !(!a && !c && d)) // if it was a capture (and not en passant) we restore the piece
-        setSq(stm, p, m.getTo());
+        setSquare(stm, p, m.getTo());
 
     stm = op;
     status = PLAYING;
@@ -301,6 +302,6 @@ void board::undoMove() {
     lastIrreversibleMove.pop();
 }
 
-U64 board::getHash() {
+U64 board::getHash() const {
     return hash;
 }

@@ -85,9 +85,9 @@ move stringToMove(std::string s) {
     unsigned int start = (s[0] - 'a') + (s[1] - '1') * 8;
     unsigned int end = (s[2] - 'a') + (s[3] - '1') * 8;
     move moves[200];
-    unsigned int movecnt = movegen::generate_moves(moves, false);
+    unsigned int moveCount = movegen::generate_moves(moves, false);
     move m;
-    for (int i=0;i<movecnt;i++) {
+    for (int i=0; i < moveCount; i++) {
         if (moves[i].getFrom() == start && moves[i].getTo() == end) {
             m = moves[i];
         }

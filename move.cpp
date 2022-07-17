@@ -1,11 +1,9 @@
-#include <cassert>
 #include "move.h"
 #include "utils.h"
 #include "piece.h"
 
 move::move(unsigned int from, unsigned int to, unsigned int flags, unsigned char capturedPiece) {
     data = ((capturedPiece & 0xf) << 16 | (flags & 0xf) << 12 | (from & 0x3f) << 6 | (to & 0x3f));
-    assert(("CAPTURE FLAG is missing", isCapture()));
 }
 
 move::move(unsigned int from, unsigned int to, unsigned int flags) {

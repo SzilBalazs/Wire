@@ -12,10 +12,10 @@
 
 int basePieceValues[6] = {90, 500, 260, 300, 900};
 
-void orderMoves(move *moves, unsigned int movecnt) {
-    std::vector<std::pair<int, move>> move_list(movecnt);
+void orderMoves(move *moves, unsigned int moveCount) {
+    std::vector<std::pair<int, move>> move_list(moveCount);
     move recordedBestMove = getBestMove();
-    for (int i=0;i<movecnt;i++) {
+    for (int i=0; i < moveCount; i++) {
         int score = 0;
         if (moves[i] == recordedBestMove) score+=10000;
         if (moves[i].isPromo()) score+=900;
@@ -27,7 +27,7 @@ void orderMoves(move *moves, unsigned int movecnt) {
 
     std::sort(move_list.begin(), move_list.end());
     std::reverse(move_list.begin(), move_list.end());
-    for (int i=0;i<movecnt;i++) {
+    for (int i=0; i < moveCount; i++) {
         moves[i] = move_list[i].second;
     }
 }
