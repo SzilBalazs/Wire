@@ -10,7 +10,7 @@
 namespace uci {
 
     bool debugMode;
-    unsigned int maxDepth, wtime, btime, movestogo;
+    unsigned int maxDepth, wTime, bTime, nextTimeControl;
 
     void out(std::string cmd) {
         std::cout << cmd << "\n";
@@ -41,8 +41,12 @@ namespace uci {
     }
 
     void go() {
-        unsigned int searchLength = 300;
-        std::thread searchStopThread(waitAndStopSearch, searchLength);
+        unsigned int remainingTime = (b.stm == WHITE ? wTime : bTime);
+        std::thread searchStopThread;
+        if (remainingTime != 0) {
+            unsigned int searchLength = remainingTime/(nextTimeControl+5);
+            searchStopThread = std::thread(waitAndStopSearch, searchLength);
+        }
 
         iterativeDeepening(maxDepth);
 
@@ -133,7 +137,9 @@ namespace uci {
                 std::string line;
                 std::getline(std::cin, line);
                 ss << line;
-                maxDepth=100, wtime=0, btime=0, movestogo=1000;
+                // if next time control is not defined (sudden death) we calculate with 60 more moves
+                // if wTime or bTime is set to 0 we start an infinite search
+                maxDepth=1000, wTime=0, bTime=0, nextTimeControl=60;
                 while (ss) {
                     std::string token;
                     ss >> token;
@@ -144,11 +150,11 @@ namespace uci {
                     } else if (token == "infinite") {
                         maxDepth = 1000;
                     } else if (token == "wtime") {
-                        ss >> wtime;
+                        ss >> wTime;
                     } else if (token == "btime") {
-                        ss >> btime;
+                        ss >> bTime;
                     } else if (token == "movestogo") {
-                        ss >> movestogo;
+                        ss >> nextTimeControl;
                     }
                 }
                 searchThread = std::thread(go);
