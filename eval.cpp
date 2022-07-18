@@ -84,21 +84,22 @@ int bKingTable[64] = {-60, -60, -60, -60, -60, -60, -60, -60,
                       20, 20, 0, 0, 0, 0, 20, 20,
                       30, 30, 10, 0, 0, 10, 30, 30};
 
-int basePieceValue[6] = {100, 600, 290, 380, 1050};
+int basePieceValue[6] = {100, 600, 250, 360, 1050};
 
 const int TEMPO_SCORE = 10;
 
 // pawn values
 const int BLOCKED_PAWN_PENALTY = -10;
-const int PASSED_PAWN_BONUS = 20;
+const int PASSED_PAWN_BONUS = 15;
 const int CHAIN_PAWN_BONUS = 5;
-const int DOUBLE_PAWN_PENALTY = -10;
+const int DOUBLE_PAWN_PENALTY = -5;
 const int ISOLATED_PAWN_PENALTY = -15;
 
 // rook values
 const int OPEN_FILE = 30;
 const int HALF_OPEN_FILE = 15;
 
+GameStage stage = OPENING; // <- OPENING is not used
 
 int evalWhitePawns() {
     int score = 0;
@@ -114,6 +115,11 @@ int evalWhitePawns() {
         unsigned int index = _wPawns.pop_lsb();
 
         score += basePieceValue[PAWN] + wPawnTable[index];
+
+        // In endgame, we will reward the engine for making progress forward with the pawns
+        if (stage == ENDGAME) {
+            score += (indexToRank(index)-2)*5;
+        }
 
         // Check for a chain pawn
         if (movegen::pawnAttacks(index, BLACK) & wPawns) {
@@ -171,6 +177,11 @@ int evalBlackPawns() {
 
         score += basePieceValue[PAWN] + bPawnTable[index];
 
+        // In endgame, we will reward the engine for making progress forward with the pawns
+        if (stage == ENDGAME) {
+            score += (7-indexToRank(index))*5;
+        }
+
         // Check for a chain pawn
         if (movegen::pawnAttacks(index, WHITE) & bPawns) {
             score += CHAIN_PAWN_BONUS;
@@ -215,9 +226,14 @@ int evalBlackPawns() {
 int eval() {
     movegen::update_general_data();
 
-    GameStage stage = OPENING; // <- OPENING is not used
-    int pawnCount = b.pieceBB[PAWN].pop_cnt();
+    unsigned int endgameWeight = b.pieceBB[QUEEN].pop_cnt()*3 + b.pieceBB[ROOK].pop_cnt()*2 + (b.pieceBB[KNIGHT] | b.pieceBB[BISHOP]).pop_cnt();
+    if (endgameWeight <= 8) {
+        stage = ENDGAME;
+    } else {
+        stage = MIDGAME;
+    }
 
+    int pawnCount = b.pieceBB[PAWN].pop_cnt();
 
     // white eval
     int whiteEval = 0;
@@ -252,7 +268,11 @@ int eval() {
         whiteEval += basePieceValue[QUEEN]; // TODO maybe add more stuff?
     }
 
-    whiteEval += wKingTable[b.wking];
+    if (stage == MIDGAME) {
+        whiteEval += wKingTable[b.wking];
+    } else if (stage == ENDGAME) {
+        whiteEval += (2-centerDist[b.wking])*20;
+    }
 
 
     // black eval
@@ -288,7 +308,11 @@ int eval() {
         blackEval += basePieceValue[QUEEN]; // TODO maybe add more stuff?
     }
 
-    blackEval += bKingTable[b.bking];
+    if (stage == MIDGAME) {
+        blackEval += bKingTable[b.bking];
+    } else if (stage == ENDGAME) {
+        blackEval += (2-centerDist[b.bking])*20;
+    }
 
     if (b.stm == WHITE)
         return whiteEval - blackEval + TEMPO_SCORE;
