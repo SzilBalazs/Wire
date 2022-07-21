@@ -108,7 +108,7 @@ int search(unsigned int depth, int alpha, int beta, int ply) {
     return alpha;
 }
 
-move searchRoot(unsigned int depth) {
+move searchRoot(unsigned int depth, bool uci) {
     nodeCount = 1;
     move bestMove;
     int bestEval = INT32_MIN;
@@ -144,30 +144,33 @@ move searchRoot(unsigned int depth) {
     long long milli = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
     long long nps = milli == 0 ? 0 : nodeCount / milli * 1000;
 
-    std::string scoreStr = "score ";
+    // We only print out info if UCI is enabled
+    if (uci) {
+        std::string scoreStr = "score ";
 
-    int mateDistance = std::abs(std::abs(bestEval) - MATE_SCORE) / 2 + 1; // TODO fix this
+        int mateDistance = std::abs(std::abs(bestEval) - MATE_SCORE) / 2 + 1; // TODO fix this
 
-    if (mateDistance < 100) {
-        scoreStr += "mate " + std::to_string(mateDistance);
-    } else {
-        scoreStr += "cp " + std::to_string(bestEval);
+        if (mateDistance < 100) {
+            scoreStr += "mate " + std::to_string(mateDistance);
+        } else {
+            scoreStr += "cp " + std::to_string(bestEval);
+        }
+
+        uci::out("info",
+                 {"depth", std::to_string(depth), "nodes", std::to_string(nodeCount), scoreStr,
+                  "time",
+                  std::to_string(milli), "nps", std::to_string(nps), "pv", pvLine});
     }
-
-    uci::out("info",
-             {"depth", std::to_string(depth), "nodes", std::to_string(nodeCount), scoreStr,
-              "time",
-              std::to_string(milli), "nps", std::to_string(nps), "pv", pvLine});
 
     return bestMove;
 }
 
-void iterativeDeepening(unsigned int maxDepth) {
+void iterativeDeepening(unsigned int maxDepth, bool uci) {
     stopSearch = false;
     move bestMove;
 
     for (unsigned int depth = 1; depth <= maxDepth; depth++) {
-        move pvMove = searchRoot(depth);
+        move pvMove = searchRoot(depth, uci);
 
         if (stopSearch) {
             break;
@@ -180,5 +183,7 @@ void iterativeDeepening(unsigned int maxDepth) {
 
     stopSearch = true;
 
-    uci::out("bestmove", {bestMove.str()});
+    if (uci) {
+        uci::out("bestmove", {bestMove.str()});
+    }
 }

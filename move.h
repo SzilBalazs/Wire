@@ -1,6 +1,7 @@
 // main source is https://www.chessprogramming.org/Encoding_Moves
 #ifndef CHESS_MOVE_H
 #define CHESS_MOVE_H
+
 #include <iostream>
 
 const unsigned int PROMO_FLAG = 0x8;    // 0b1000
@@ -51,6 +52,6 @@ private:
     unsigned int data;
 };
 
-std::ostream& operator<<(std::ostream&, const move&);
+std::ostream &operator<<(std::ostream &, const move &);
 
 #endif //CHESS_MOVE_H

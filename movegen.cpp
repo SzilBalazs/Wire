@@ -10,7 +10,7 @@ bitboard rayMasks[8][64], bitMask[64], fileMask[64], rankMask[64], diagonalMask[
         fileMaskEx[64], rankMaskEx[64], diagonalMaskEx[64], antiDiagonalMaskEx[64];
 bitboard rankAttackTable[256][8], knightAttackTable[64], kingAttackTable[64], pawnAttackTable[64][2];
 
-unsigned int movecnt=0;
+unsigned int movecnt = 0;
 
 void movegen::init() {
     bitboard north = 0x0101010101010100ULL;
@@ -299,8 +299,7 @@ void movegen::generate_pawn_captures(move *moves) {
         if (b.ep.top() != -1) {
             b.allPieceBB[BLACK].clear(b.ep.top());
         }
-    }
-    else {
+    } else {
         if (b.ep.top() != -1) {
             b.allPieceBB[WHITE].set(b.ep.top());
         }
@@ -452,7 +451,7 @@ void movegen::generate_king_moves(move *moves) {
     }
 }
 
-bitboard movegen::pawnAttacks(unsigned int sq, Color color)  {
+bitboard movegen::pawnAttacks(unsigned int sq, Color color) {
     return pawnAttackTable[sq][color];
 }
 
@@ -484,7 +483,7 @@ bitboard movegen::rankAttacks(unsigned int sq) {
     return attacks;
 }
 
-bitboard movegen::diagonalAttacks(unsigned int sq)  {
+bitboard movegen::diagonalAttacks(unsigned int sq) {
     // The math behind these this functions was taken from https://www.chessprogramming.org/Hyperbola_Quintessence
     bitboard attacks(b.occupied & diagonalMaskEx[sq]);
     bitboard reversedAttacks = attacks.reverse();
@@ -494,7 +493,7 @@ bitboard movegen::diagonalAttacks(unsigned int sq)  {
     return attacks & diagonalMaskEx[sq];
 }
 
-bitboard movegen::antiDiagonalAttacks(unsigned int sq)  {
+bitboard movegen::antiDiagonalAttacks(unsigned int sq) {
     // The math behind these this functions was taken from https://www.chessprogramming.org/Hyperbola_Quintessence
     bitboard attacks(b.occupied & antiDiagonalMaskEx[sq]);
     bitboard reversedAttacks = attacks.reverse();
@@ -504,28 +503,28 @@ bitboard movegen::antiDiagonalAttacks(unsigned int sq)  {
     return attacks & antiDiagonalMaskEx[sq];
 }
 
-bitboard movegen::rookAttacks(unsigned int sq)  {
+bitboard movegen::rookAttacks(unsigned int sq) {
     return fileAttacks(sq) | rankAttacks(sq);
 }
 
-bitboard movegen::bishopAttacks(unsigned int sq)  {
+bitboard movegen::bishopAttacks(unsigned int sq) {
     return diagonalAttacks(sq) | antiDiagonalAttacks(sq);
 }
 
-bitboard movegen::queenAttacks(unsigned int sq)  {
+bitboard movegen::queenAttacks(unsigned int sq) {
     return rookAttacks(sq) | bishopAttacks(sq);
 }
 
-bitboard movegen::knightAttacks(unsigned int sq)  {
+bitboard movegen::knightAttacks(unsigned int sq) {
     return knightAttackTable[sq];
 }
 
-bitboard movegen::kingAttacks(unsigned int sq)  {
+bitboard movegen::kingAttacks(unsigned int sq) {
     return kingAttackTable[sq] & ~b.kingDanger;
 }
 
-bitboard movegen::getRayIntoSq(unsigned int from, unsigned int to)  { // TODO make this faster
-    for (auto &rayMask: rayMasks) {
+bitboard movegen::getRayIntoSq(unsigned int from, unsigned int to) { // TODO make this faster
+    for (auto &rayMask : rayMasks) {
         if (rayMask[from].get(to)) return rayMask[from] & queenAttacks(from);
     }
 }
@@ -589,10 +588,12 @@ unsigned int movegen::generate_moves(move *moves, bool capturesOnly) {
                 moves[movecnt++] = move(4, 2, SPECIAL1_FLAG | SPECIAL2_FLAG);
             }
         } else {
-            if (b.canCastle(BK_MASK) && !(b.kingDanger & 0x7000000000000000ULL) && !(b.occupied & 0x6000000000000000ULL)) {
+            if (b.canCastle(BK_MASK) && !(b.kingDanger & 0x7000000000000000ULL) &&
+                !(b.occupied & 0x6000000000000000ULL)) {
                 moves[movecnt++] = move(60, 62, SPECIAL1_FLAG);
             }
-            if (b.canCastle(BQ_MASK) && !(b.kingDanger & 0x1c00000000000000ULL) && !(b.occupied & 0xe00000000000000ULL)) {
+            if (b.canCastle(BQ_MASK) && !(b.kingDanger & 0x1c00000000000000ULL) &&
+                !(b.occupied & 0xe00000000000000ULL)) {
                 moves[movecnt++] = move(60, 58, SPECIAL1_FLAG | SPECIAL2_FLAG);
             }
         }
@@ -605,7 +606,6 @@ unsigned int movegen::generate_moves(move *moves, bool capturesOnly) {
             b.status = DRAW;
         }
     }
-
     return movecnt;
 }
 

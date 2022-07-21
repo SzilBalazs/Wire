@@ -48,7 +48,7 @@ namespace uci {
             searchStopThread = std::thread(waitAndStopSearch, searchLength);
         }
 
-        iterativeDeepening(maxDepth);
+        iterativeDeepening(maxDepth, true);
 
         if (searchStopThread.joinable())
             searchStopThread.join();
@@ -139,7 +139,7 @@ namespace uci {
                 ss << line;
                 // if next time control is not defined (sudden death) we calculate with 60 more moves
                 // if wTime or bTime is set to 0 we start an infinite search
-                maxDepth=1000, wTime=0, bTime=0, nextTimeControl=60;
+                maxDepth=100, wTime=0, bTime=0, nextTimeControl=60;
                 while (ss) {
                     std::string token;
                     ss >> token;
@@ -148,7 +148,7 @@ namespace uci {
                     else if (token == "depth") {
                         ss >> maxDepth;
                     } else if (token == "infinite") {
-                        maxDepth = 1000;
+                        maxDepth = 100;
                     } else if (token == "wtime") {
                         ss >> wTime;
                     } else if (token == "btime") {

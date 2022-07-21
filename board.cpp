@@ -13,20 +13,20 @@ void hashInit() {
     std::mt19937 mt(rd());
     std::uniform_int_distribution<U64> dist(0, (1ULL << 63) + 1);
 
-    for (unsigned int sq=0;sq<64;sq++) {
-        for (unsigned int color=0;color<2;color++) {
-            for (unsigned int piece=0;piece<6;piece++) {
+    for (unsigned int sq = 0; sq < 64; sq++) {
+        for (unsigned int color = 0; color < 2; color++) {
+            for (unsigned int piece = 0; piece < 6; piece++) {
                 pieceRandTable[sq][color][piece] = dist(mt);
             }
         }
         epRandTable[sq] = dist(mt);
     }
 
-    for (U64 & i : castleRandTable) {
+    for (U64 &i : castleRandTable) {
         i = dist(mt);
     }
 
-    for (U64 & i : sideRandTable) {
+    for (U64 &i : sideRandTable) {
         i = dist(mt);
     }
 }
@@ -70,7 +70,7 @@ void board::clearSquare(unsigned int index) {
         hash ^= pieceRandTable[index][colors[index]][pieces[index]];
     }
 
-    for (unsigned int i=0;i<6;i++) {
+    for (unsigned int i = 0; i < 6; i++) {
         pieceBB[i].clear(index);
     }
 
@@ -107,7 +107,7 @@ void board::loadPositionFromFEN(std::string fen) { // NOT CHECKING FOR VALIDITY 
             index += c - '0';
         } else if (c == '/') {
             index -= 16;
-        } else if (('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c)){
+        } else if (('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c)) {
             setSquare(charToColor(c), charToPiece(c), index);
             index++;
         }
@@ -239,7 +239,7 @@ void board::makeMove(move m) {
     stm = op;
 
     // check for repetition
-    unsigned int counter=1;
+    unsigned int counter = 1;
     for (U64 i : hashHistory) { // TODO speed this up
         if (i == hash) {
             counter++;

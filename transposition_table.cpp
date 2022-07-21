@@ -10,7 +10,8 @@ int probeHash(unsigned int depth, int alpha, int beta) {
     U64 hash = b.getHash();
     HashRecord *record = &tt[hash & MASK];
     if (record->hash == hash) {
-        if (record->depth >= depth && (record->eval >= -MATE_SCORE+100 && record->eval <= MATE_SCORE-100)) { // we don't want to get mate scores because the depth is messed up
+        if (record->depth >= depth && (record->eval >= -MATE_SCORE + 100 && record->eval <= MATE_SCORE -
+                                                                                            100)) { // we don't want to get mate scores because the depth is messed up
             // we already calculated an eval at a higher depth
             if (record->flag == EXACT) {
                 return record->eval;

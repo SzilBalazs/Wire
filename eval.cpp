@@ -108,7 +108,7 @@ int evalWhitePawns() {
 
     // Blocked Pawns
     bitboard blockedPawns = wPawns.step(NORTH) & b.allPieceBB[BLACK];
-    score += BLOCKED_PAWN_PENALTY*blockedPawns.pop_cnt();
+    score += BLOCKED_PAWN_PENALTY * blockedPawns.pop_cnt();
 
     bitboard _wPawns = wPawns;
     while (_wPawns) {
@@ -118,7 +118,7 @@ int evalWhitePawns() {
 
         // In endgame, we will reward the engine for making progress forward with the pawns
         if (stage == ENDGAME) {
-            score += (indexToRank(index)-2)*5;
+            score += (indexToRank(index) - 2) * 5;
         }
 
         // Check for a chain pawn
@@ -146,13 +146,13 @@ int evalWhitePawns() {
 
         // Check for passed pawn
         bool foundEnemyPawn = false;
-        if ((indexToFile(index) != 0) && (movegen::getRayMask(index-1, NORTH) & bPawns)) {
+        if ((indexToFile(index) != 0) && (movegen::getRayMask(index - 1, NORTH) & bPawns)) {
             foundEnemyPawn = true;
         }
         if (movegen::getRayMask(index, NORTH) & bPawns) {
             foundEnemyPawn = true;
         }
-        if ((indexToFile(index) != 7) && (movegen::getRayMask(index+1, NORTH) & bPawns)) {
+        if ((indexToFile(index) != 7) && (movegen::getRayMask(index + 1, NORTH) & bPawns)) {
             foundEnemyPawn = true;
         }
         if (!foundEnemyPawn) {
@@ -169,7 +169,7 @@ int evalBlackPawns() {
 
     // Blocked Pawns
     bitboard blockedPawns = bPawns.step(SOUTH) & b.allPieceBB[WHITE];
-    score += BLOCKED_PAWN_PENALTY*blockedPawns.pop_cnt();
+    score += BLOCKED_PAWN_PENALTY * blockedPawns.pop_cnt();
 
     bitboard _bPawns = bPawns;
     while (_bPawns) {
@@ -179,7 +179,7 @@ int evalBlackPawns() {
 
         // In endgame, we will reward the engine for making progress forward with the pawns
         if (stage == ENDGAME) {
-            score += (7-indexToRank(index))*5;
+            score += (7 - indexToRank(index)) * 5;
         }
 
         // Check for a chain pawn
@@ -207,13 +207,13 @@ int evalBlackPawns() {
 
         // Check for passed pawn
         bool foundEnemyPawn = false;
-        if ((indexToFile(index) != 0) && (movegen::getRayMask(index-1, SOUTH) & wPawns)) {
+        if ((indexToFile(index) != 0) && (movegen::getRayMask(index - 1, SOUTH) & wPawns)) {
             foundEnemyPawn = true;
         }
         if (movegen::getRayMask(index, SOUTH) & wPawns) {
             foundEnemyPawn = true;
         }
-        if ((indexToFile(index) != 7) && (movegen::getRayMask(index+1, SOUTH) & wPawns)) {
+        if ((indexToFile(index) != 7) && (movegen::getRayMask(index + 1, SOUTH) & wPawns)) {
             foundEnemyPawn = true;
         }
         if (!foundEnemyPawn) {
@@ -226,7 +226,8 @@ int evalBlackPawns() {
 int eval() {
     movegen::update_general_data();
 
-    unsigned int endgameWeight = b.pieceBB[QUEEN].pop_cnt()*3 + b.pieceBB[ROOK].pop_cnt()*2 + (b.pieceBB[KNIGHT] | b.pieceBB[BISHOP]).pop_cnt();
+    unsigned int endgameWeight = b.pieceBB[QUEEN].pop_cnt() * 3 + b.pieceBB[ROOK].pop_cnt() * 2 +
+                                 (b.pieceBB[KNIGHT] | b.pieceBB[BISHOP]).pop_cnt();
     if (endgameWeight <= 8) {
         stage = ENDGAME;
     } else {
@@ -247,7 +248,7 @@ int eval() {
 
     while (wRooks) {
         unsigned int index = wRooks.pop_lsb();
-        whiteEval += (basePieceValue[ROOK] + (16-pawnCount) * 5) + wRookTable[index];
+        whiteEval += (basePieceValue[ROOK] + (16 - pawnCount) * 5) + wRookTable[index];
         unsigned int filePawnCount = (movegen::getFileMask(index) & b.pieceBB[PAWN]).pop_cnt();
         if (filePawnCount == 0) whiteEval += OPEN_FILE;
         if (filePawnCount == 1) whiteEval += HALF_OPEN_FILE;
@@ -271,7 +272,7 @@ int eval() {
     if (stage == MIDGAME) {
         whiteEval += wKingTable[b.wking];
     } else if (stage == ENDGAME) {
-        whiteEval += (2-centerDist[b.wking])*20;
+        whiteEval += (2 - centerDist[b.wking]) * 20;
     }
 
 
@@ -287,7 +288,7 @@ int eval() {
 
     while (bRooks) {
         unsigned int index = bRooks.pop_lsb();
-        blackEval += (basePieceValue[ROOK] + (16-pawnCount) * 5) + bRookTable[index];
+        blackEval += (basePieceValue[ROOK] + (16 - pawnCount) * 5) + bRookTable[index];
         unsigned int filePawnCount = (movegen::getFileMask(index) & b.pieceBB[PAWN]).pop_cnt();
         if (filePawnCount == 0) blackEval += OPEN_FILE;
         if (filePawnCount == 1) blackEval += HALF_OPEN_FILE;
@@ -311,7 +312,7 @@ int eval() {
     if (stage == MIDGAME) {
         blackEval += bKingTable[b.bking];
     } else if (stage == ENDGAME) {
-        blackEval += (2-centerDist[b.bking])*20;
+        blackEval += (2 - centerDist[b.bking]) * 20;
     }
 
     if (b.stm == WHITE)
