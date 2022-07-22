@@ -1,7 +1,3 @@
-//
-// Created by user on 2022. 07. 11..
-//
-
 #include "transposition_table.h"
 
 HashRecord tt[SIZE];

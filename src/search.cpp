@@ -20,7 +20,7 @@ int searchCaptures(int alpha, int beta, int ply) { // TODO maybe record somehow 
     unsigned int moveCount = movegen::generate_moves(moves, true);
 
     // move ordering
-    orderMoves(moves, moveCount);
+    orderMoves(moves, moveCount, ply);
 
     for (int i = 0; i < moveCount; i++) {
 
@@ -68,7 +68,7 @@ int search(unsigned int depth, int alpha, int beta, int ply) {
     EntryFlag flag = ALPHA;
 
     // move ordering
-    orderMoves(moves, moveCount);
+    orderMoves(moves, moveCount, ply);
 
     // mate distance pruning
     // this is useful because we disable tt with mate scores so this gets the speed back
@@ -82,22 +82,40 @@ int search(unsigned int depth, int alpha, int beta, int ply) {
         if (alpha >= upperBound) return upperBound;
     }
 
+    // PVS
+    bool pvFound = false;
 
     // iterating through moves
     move bestMove;
     for (int i = 0; i < moveCount; i++) {
         b.makeMove(moves[i]);
-        int score = -search(depth - 1, -beta, -alpha, ply + 1);
+
+        int score;
+
+        if (!pvFound) {
+            score = -search(depth - 1, -beta, -alpha, ply + 1);
+        } else {
+            score = -search(depth - 1, -alpha-1, -alpha, ply + 1);
+
+            if (score > alpha && score < beta) {
+                score = -search(depth - 1, -beta, -alpha, ply + 1);
+            }
+        }
+
         b.undoMove();
 
         if (stopSearch) return UNKNOWN_EVAL;
 
         if (score >= beta) {
+            if (moves[i].isQuiet()) {
+                recordKillerMove(moves[i], ply);
+            }
             saveHash(depth, moves[i], beta, BETA);
             return beta;
         }
 
         if (score > alpha) {
+            pvFound = true;
             alpha = score;
             bestMove = moves[i];
             flag = EXACT;
@@ -117,7 +135,7 @@ move searchRoot(unsigned int depth, bool uci) {
     unsigned int moveCount = movegen::generate_moves(moves, false);
 
     // move ordering
-    orderMoves(moves, moveCount);
+    orderMoves(moves, moveCount, 0);
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
@@ -166,7 +184,10 @@ move searchRoot(unsigned int depth, bool uci) {
 }
 
 void iterativeDeepening(unsigned int maxDepth, bool uci) {
+
     stopSearch = false;
+    clearKillerMoves();
+
     move bestMove;
 
     for (unsigned int depth = 1; depth <= maxDepth; depth++) {
