@@ -87,7 +87,7 @@ move stringToMove(std::string s) {
     move moves[200];
     unsigned int moveCount = movegen::generate_moves(moves, false);
     move m;
-    for (int i=0; i < moveCount; i++) {
+    for (int i = 0; i < moveCount; i++) {
         if (moves[i].getFrom() == start && moves[i].getTo() == end) {
             m = moves[i];
         }

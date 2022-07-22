@@ -85,7 +85,7 @@ std::string move::str() const {
     return formatIndex(getFrom()) + formatIndex(getTo()) + token;
 }
 
-std::ostream& operator<<(std::ostream& s, const move& a) {
+std::ostream &operator<<(std::ostream &s, const move &a) {
     return s << formatIndex(a.getFrom()) << formatIndex(a.getTo());
 }
 

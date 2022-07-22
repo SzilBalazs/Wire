@@ -10,7 +10,7 @@ int probeHash(unsigned int depth, int alpha, int beta) {
     U64 hash = b.getHash();
     HashRecord *record = &tt[hash & MASK];
     if (record->hash == hash) {
-        if (record->depth >= depth && (record->eval >= -MATE_SCORE+100 && record->eval <= MATE_SCORE-100)) { // we don't want to get mate scores because the depth is messed up
+        if (record->depth >= depth) {
             // we already calculated an eval at a higher depth
             if (record->flag == EXACT) {
                 return record->eval;
@@ -31,12 +31,13 @@ int probeHash(unsigned int depth, int alpha, int beta) {
 void saveHash(unsigned int depth, move bestMove, int score, EntryFlag flag) {
     U64 hash = b.getHash();
     HashRecord *record = &tt[hash & MASK];
-    // TODO use a better replacement scheme
-    record->hash = hash;
-    record->depth = depth;
-    record->bestMove = bestMove;
-    record->eval = score;
-    record->flag = flag;
+    if ((record->eval >= -MATE_SCORE+100 && record->eval <= MATE_SCORE-100) && (record->hash != hash || flag == EXACT || depth > (record->depth * 2) / 3)) {
+        record->hash = hash;
+        record->depth = depth;
+        record->bestMove = bestMove;
+        record->eval = score;
+        record->flag = flag;
+    }
 }
 
 move getBestMove() {

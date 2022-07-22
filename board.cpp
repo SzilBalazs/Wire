@@ -13,20 +13,20 @@ void hashInit() {
     std::mt19937 mt(rd());
     std::uniform_int_distribution<U64> dist(0, (1ULL << 63) + 1);
 
-    for (unsigned int sq=0;sq<64;sq++) {
-        for (unsigned int color=0;color<2;color++) {
-            for (unsigned int piece=0;piece<6;piece++) {
+    for (unsigned int sq = 0; sq < 64; sq++) {
+        for (unsigned int color = 0; color < 2; color++) {
+            for (unsigned int piece = 0; piece < 6; piece++) {
                 pieceRandTable[sq][color][piece] = dist(mt);
             }
         }
         epRandTable[sq] = dist(mt);
     }
 
-    for (U64 & i : castleRandTable) {
+    for (U64 &i : castleRandTable) {
         i = dist(mt);
     }
 
-    for (U64 & i : sideRandTable) {
+    for (U64 &i : sideRandTable) {
         i = dist(mt);
     }
 }
@@ -70,7 +70,7 @@ void board::clearSquare(unsigned int index) {
         hash ^= pieceRandTable[index][colors[index]][pieces[index]];
     }
 
-    for (unsigned int i=0;i<6;i++) {
+    for (unsigned int i = 0; i < 6; i++) {
         pieceBB[i].clear(index);
     }
 
@@ -92,10 +92,10 @@ void board::clearPosition() {
     castle_rights.push(0);
     wking = 64;
     bking = 64;
-    hash = 0;
     for (int ind = 0; ind < 64; ind++) {
         clearSquare(ind);
     }
+    hash = 0;
 }
 
 void board::loadPositionFromFEN(std::string fen) { // NOT CHECKING FOR VALIDITY -> TODO check for validity
@@ -107,7 +107,7 @@ void board::loadPositionFromFEN(std::string fen) { // NOT CHECKING FOR VALIDITY 
             index += c - '0';
         } else if (c == '/') {
             index -= 16;
-        } else if (('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c)){
+        } else if (('a' <= c && 'z' >= c) || ('A' <= c && 'Z' >= c)) {
             setSquare(charToColor(c), charToPiece(c), index);
             index++;
         }
@@ -135,7 +135,7 @@ void board::loadPositionFromFEN(std::string fen) { // NOT CHECKING FOR VALIDITY 
         ind += 2;
         ep.top() = -1;
     }
-
+    hashHistory.emplace_back(getHash());
     // TODO read halfmove counter and fullmove counter
 }
 
@@ -170,7 +170,7 @@ void board::movePiece(unsigned int from, unsigned int to, Piece p, Color c) {
 }
 
 void board::makeMove(move m) {
-    updateHash();
+    updateHash(); // we remove castle rights, ep, and stm from the hash
     ep.push(-1);
     castle_rights.push(castle_rights.top());
 
@@ -237,15 +237,12 @@ void board::makeMove(move m) {
     }
     moves.push(m);
     stm = op;
-    updateHash();
 
     // check for repetition
-    unsigned int counter=1;
-    if (!hashHistory.empty()) {
-        for (U64 i : hashHistory) {
-            if (i == hash) {
-                counter++;
-            }
+    unsigned int counter = 1;
+    for (U64 i : hashHistory) { // TODO speed this up
+        if (i == hash) {
+            counter++;
         }
     }
     if (counter >= 3) {
@@ -253,6 +250,7 @@ void board::makeMove(move m) {
     }
 
     hashHistory.emplace_back(getHash());
+    updateHash(); // we only add them back after repetition check because they don't have to be the same
 }
 
 void board::undoMove() {

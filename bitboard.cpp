@@ -30,7 +30,7 @@ bitboard::bitboard(U64 i) {
     bb = i;
 }
 
-unsigned int bitboard::pop_cnt() {
+int bitboard::pop_cnt() {
     return __builtin_popcountll(bb);
 }
 

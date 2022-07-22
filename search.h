@@ -8,8 +8,11 @@
 #include "move.h"
 
 int searchCaptures(int, int, int);
+
 int search(unsigned int, int, int, int);
-move searchRoot(unsigned int);
-void iterativeDeepening(unsigned int);
+
+move searchRoot(unsigned int, bool);
+
+void iterativeDeepening(unsigned int, bool);
 
 #endif //CHESS_SEARCH_H

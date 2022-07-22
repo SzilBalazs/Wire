@@ -2,10 +2,11 @@
 #include <string>
 #include "board.h"
 #include "uci.h"
+#include "bench.h"
 
 board b;
 bool stopSearch = false;
-int nodeCount=0;
+int nodeCount = 0;
 
 
 int main() {
@@ -14,8 +15,14 @@ int main() {
 
     if (mode == "uci") {
         uci::loop();
+    } else if (mode == "bench") {
+        bench::init();
+        bench::searchTest();
+    } else if (mode == "perft") {
+        bench::init();
+        bench::perftTest();
+    } else {
+        std::cout << "Invalid mode!" << std::endl;
     }
-
-    std::cout << "Invalid protocol!" << std::endl;
     return 0;
 }

@@ -29,19 +29,25 @@ namespace movegen {
 
     bitboard kingAttacks(unsigned int);
 
+    bitboard getFileMaskEx(unsigned int);
+
+    bitboard getFileMask(unsigned int);
+
+    bitboard getRayMask(unsigned int, Direction);
+
     void update_general_data();
 
     void update_checks();
 
     void update_lmg_bitboards(); // legal move generation
 
-    void generate_pawn_pushes(move*);
+    void generate_pawn_pushes(move *);
 
-    void generate_pawn_captures(move*);
+    void generate_pawn_captures(move *);
 
-    void generate_pawn_promotions(move*);
+    void generate_pawn_promotions(move *);
 
-    void generate_king_captures(move*);
+    void generate_king_captures(move *);
 
     void generate_bitboards();
 
