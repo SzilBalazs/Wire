@@ -10,7 +10,7 @@
 #include "move.h"
 
 
-const unsigned int SIZE = (1UL << 26); // 2**24
+const unsigned int SIZE = (1UL << 23);
 const unsigned int MASK = SIZE - 1;
 
 enum EntryFlag : unsigned char {
