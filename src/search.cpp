@@ -82,12 +82,26 @@ int search(unsigned int depth, int alpha, int beta, int ply) {
         if (alpha >= upperBound) return upperBound;
     }
 
+    // PVS
+    bool pvFound = false;
 
     // iterating through moves
     move bestMove;
     for (int i = 0; i < moveCount; i++) {
         b.makeMove(moves[i]);
-        int score = -search(depth - 1, -beta, -alpha, ply + 1);
+
+        int score;
+
+        if (!pvFound) {
+            score = -search(depth - 1, -beta, -alpha, ply + 1);
+        } else {
+            score = -search(depth - 1, -alpha-1, -alpha, ply + 1);
+
+            if (score > alpha && score < beta) {
+                score = -search(depth - 1, -beta, -alpha, ply + 1);
+            }
+        }
+
         b.undoMove();
 
         if (stopSearch) return UNKNOWN_EVAL;
@@ -98,6 +112,7 @@ int search(unsigned int depth, int alpha, int beta, int ply) {
         }
 
         if (score > alpha) {
+            pvFound = true;
             alpha = score;
             bestMove = moves[i];
             flag = EXACT;
