@@ -18,7 +18,13 @@ void orderMoves(move *moves, unsigned int moveCount) {
     for (int i = 0; i < moveCount; i++) {
         int score = 0;
         if (moves[i] == recordedBestMove) score += 10000;
-        if (moves[i].isPromo()) score += 900;
+        if (moves[i].isPromo()) {
+            if (moves[i].isSpecial1() && moves[i].isSpecial2()) score += basePieceValues[QUEEN];
+            else if (moves[i].isSpecial1() && !moves[i].isSpecial2()) score += basePieceValues[ROOK];
+            else if (!moves[i].isSpecial1() && moves[i].isSpecial2()) score += basePieceValues[BISHOP];
+            else score += basePieceValues[KNIGHT];
+
+        }
         if (moves[i].isCapture()) {
             score += basePieceValues[decodePiece(moves[i].getCapturedPiece()).second];
         }
