@@ -77,11 +77,6 @@ int search(unsigned int depth, int alpha, int beta, int ply) {
         if (alpha >= upperBound) return upperBound;
     }
 
-    // Internal iterative deepening
-    if (depth >= 4 && getBestMove().isNULL()) {
-        depth--;
-    }
-
     // Move ordering
     orderMoves(moves, moveCount, ply);
 
