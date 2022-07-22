@@ -4,4 +4,4 @@ project(Wire)
 SET(CMAKE_CXX_FLAGS "-Ofast -pthread")
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Wire main.cpp piece.h board.cpp board.h movegen.cpp movegen.h move.cpp move.h utils.cpp utils.h constants.h bitboard.cpp bitboard.h eval.cpp eval.h search.cpp search.h globals.h move_ordering.cpp move_ordering.h transposition_table.cpp transposition_table.h uci.cpp uci.h bench.cpp bench.h)
+add_executable(Wire src/main.cpp src/piece.h src/board.cpp src/board.h src/movegen.cpp src/movegen.h src/move.cpp src/move.h src/utils.cpp src/utils.h src/constants.h src/bitboard.cpp src/bitboard.h src/eval.cpp src/eval.h src/search.cpp src/search.h src/globals.h src/move_ordering.cpp src/move_ordering.h src/transposition_table.cpp src/transposition_table.h src/uci.cpp src/uci.h src/bench.cpp src/bench.h)
