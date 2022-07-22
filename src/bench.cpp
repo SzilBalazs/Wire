@@ -85,11 +85,9 @@ namespace bench {
 		return nodes;
 	}
 
-    void searchTest(bool simpleOutput) {
-        if (!simpleOutput) {
-            std::cout << "Starting search test...\n" << "\r[0/" << posCount << "]";
-            std::cout.flush();
-        }
+    void searchTest() {
+        std::cout << "Starting search test...\n" << "\r[0/" << posCount << "]";
+        std::cout.flush();
 
         U64 totalNodes = 0;
 
@@ -103,10 +101,8 @@ namespace bench {
 
             U64 nodes = nodeCount;
 
-            if (!simpleOutput) {
-                std::cout << "\r[" << i+1 << "/" << posCount << "] FINISHED";
-                std::cout.flush();
-            }
+            std::cout << "\r[" << i+1 << "/" << posCount << "] FINISHED";
+            std::cout.flush();
 
             totalNodes += nodes;
         }
@@ -116,9 +112,7 @@ namespace bench {
 
         U64 nps = totalNodes / (elapsedTime / 1000000);
 
-        if (simpleOutput) std::cout << totalNodes << " NODES " << nps*1000 << " NPS" << std::endl;
-        else std::cout << "\n\nSearch test finished, a total of " << totalNodes << " nodes searched, with a speed of " << nps << "K nodes per second" << std::endl;
-
+        std::cout << "\nSearch test finished.\n\n" << totalNodes << " nodes " << nps*1000 << " nps" << std::endl;
 
     }
 
