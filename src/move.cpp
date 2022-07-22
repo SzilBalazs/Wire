@@ -71,7 +71,7 @@ bool move::isSpecial2() const {
 }
 
 bool move::isQuiet() const {
-    return isFlag(0x0);
+    return !isCapture();
 }
 
 std::string move::str() const {

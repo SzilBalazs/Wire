@@ -1,12 +1,12 @@
-//
-// Created by szil on 2022.07.09..
-//
-
 #ifndef CHESS_MOVE_ORDERING_H
 #define CHESS_MOVE_ORDERING_H
 
 #include "move.h"
 
-void orderMoves(move *moves, unsigned int moveCount);
+void clearKillerMoves();
+
+void recordKillerMove(move, int);
+
+void orderMoves(move *moves, unsigned int moveCount, int ply);
 
 #endif //CHESS_MOVE_ORDERING_H

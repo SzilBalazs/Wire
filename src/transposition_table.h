@@ -1,7 +1,3 @@
-//
-// Created by user on 2022. 07. 11..
-//
-
 #ifndef CHESS_TRANSPOSITION_TABLE_H
 #define CHESS_TRANSPOSITION_TABLE_H
 
@@ -10,7 +6,7 @@
 #include "move.h"
 
 
-const unsigned int SIZE = (1UL << 23);
+const unsigned int SIZE = (1UL << 24);
 const unsigned int MASK = SIZE - 1;
 
 enum EntryFlag : unsigned char {
