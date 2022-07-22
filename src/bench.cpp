@@ -116,7 +116,7 @@ namespace bench {
 
         U64 nps = totalNodes / (elapsedTime / 1000000);
 
-        if (simpleOutput) std::cout << "Node count = " << totalNodes << "\nNode per second = " << nps*1000 << std::endl;
+        if (simpleOutput) std::cout << totalNodes << " " << nps*1000 << std::endl;
         else std::cout << "\n\nSearch test finished, a total of " << totalNodes << " nodes searched, with a speed of " << nps << "K nodes per second" << std::endl;
 
 
