@@ -9,15 +9,21 @@ bool stopSearch = false;
 int nodeCount = 0;
 
 
-int main() {
+int main(int argc, char** argv) {
     std::string mode;
-    std::cin >> mode;
+    if (argc >= 2) {
+        mode = std::string(argv[1]);
+    }
+
+    if (mode.empty()) {
+        std::cin >> mode;
+    }
 
     if (mode == "uci") {
         uci::loop();
     } else if (mode == "bench") {
         bench::init();
-        bench::searchTest();
+        bench::searchTest(true);
     } else if (mode == "perft") {
         bench::init();
         bench::perftTest();

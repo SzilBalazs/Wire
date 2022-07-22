@@ -11,7 +11,7 @@ namespace bench {
 
 	void perftTest();
 
-    void searchTest();
+    void searchTest(bool);
 
 	U64 perft(int depth);
 
