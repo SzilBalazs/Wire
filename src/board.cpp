@@ -1,5 +1,4 @@
 #include <cassert>
-#include <random>
 #include "board.h"
 #include "constants.h"
 
@@ -8,26 +7,29 @@ U64 epRandTable[64];
 U64 castleRandTable[4];
 U64 sideRandTable[2];
 
+// source: https://web.archive.org/web/20071031100138/http://www.brucemo.com/compchess/programming/zobrist.htm
+U64 rand64() {
+    return rand() ^ ((U64) rand() << 15) ^ ((U64) rand() << 30) ^
+           ((U64) rand() << 45) ^ ((U64) rand() << 60);
+}
+
 void hashInit() {
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_int_distribution<U64> dist(0, (1ULL << 63) + 1);
 
     for (unsigned int sq = 0; sq < 64; sq++) {
         for (unsigned int color = 0; color < 2; color++) {
             for (unsigned int piece = 0; piece < 6; piece++) {
-                pieceRandTable[sq][color][piece] = dist(mt);
+                pieceRandTable[sq][color][piece] = rand64();
             }
         }
-        epRandTable[sq] = dist(mt);
+        epRandTable[sq] = rand64();
     }
 
     for (U64 &i : castleRandTable) {
-        i = dist(mt);
+        i = rand64();
     }
 
     for (U64 &i : sideRandTable) {
-        i = dist(mt);
+        i = rand64();
     }
 }
 

@@ -8,8 +8,10 @@ board b;
 bool stopSearch = false;
 int nodeCount = 0;
 
+const unsigned int seed = 3113159740;
 
 int main(int argc, char** argv) {
+    srand(seed);
     std::string mode;
     if (argc >= 2) {
         mode = std::string(argv[1]);
