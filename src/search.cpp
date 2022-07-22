@@ -65,11 +65,6 @@ int search(unsigned int depth, int alpha, int beta, int ply) {
         }
     }
 
-    EntryFlag flag = ALPHA;
-
-    // move ordering
-    orderMoves(moves, moveCount, ply);
-
     // mate distance pruning
     // this is useful because we disable tt with mate scores so this gets the speed back
     int lowerBound = -MATE_SCORE + ply, upperBound = MATE_SCORE - ply;
@@ -82,8 +77,18 @@ int search(unsigned int depth, int alpha, int beta, int ply) {
         if (alpha >= upperBound) return upperBound;
     }
 
+    // Internal iterative deepening
+    if (depth >= 4 && getBestMove().isNULL()) {
+        depth--;
+    }
+
+    // Move ordering
+    orderMoves(moves, moveCount, ply);
+
     // PVS
     bool pvFound = false;
+
+    EntryFlag flag = ALPHA;
 
     // iterating through moves
     move bestMove;
