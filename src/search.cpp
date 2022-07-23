@@ -97,10 +97,8 @@ int search(unsigned int depth, int alpha, int beta, int ply) {
     bool pvNode = beta - alpha > 1;
 
     // Razoring
-    if (!pvNode && b.checks == 0) {
-        if (depth == 1 && eval() + RAZOR_MARGIN < alpha) {
+    if (!pvNode && b.checks == 0 && depth == 1 && eval() + RAZOR_MARGIN < alpha) {
             return searchCaptures(alpha, beta, ply);
-        }
     }
 
     // Move ordering
