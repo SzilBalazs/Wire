@@ -7,6 +7,8 @@
 
 #include "move.h"
 
+const int RAZOR_MARGIN = 150;
+
 int searchCaptures(int, int, int);
 
 int search(unsigned int, int, int, int);
