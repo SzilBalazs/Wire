@@ -12,9 +12,24 @@ int searchCaptures(int alpha, int beta, int ply) { // TODO maybe record somehow 
     if (stopSearch) return UNKNOWN_EVAL;
     nodeCount++;
 
-    int curr_eval = eval();
-    if (curr_eval >= beta) return beta;
-    if (alpha < curr_eval) alpha = curr_eval;
+    int currEval = eval();
+    if (currEval >= beta) return beta;
+    if (alpha < currEval) alpha = currEval;
+
+    // Delta pruning
+    int DELTA_MARGIN = 1100;
+
+    // If we promote a pawn
+    if (b.stm == WHITE && b.allPieceBB[WHITE] & b.pieceBB[PAWN] & rank7) {
+        DELTA_MARGIN += 1100;
+    }
+    else if (b.stm == BLACK && b.allPieceBB[BLACK] & b.pieceBB[PAWN] & rank2) {
+        DELTA_MARGIN += 1100;
+    }
+
+    if (currEval + DELTA_MARGIN < alpha) {
+        return alpha;
+    }
 
     move moves[200];
     unsigned int moveCount = movegen::generate_moves(moves, true);
@@ -65,11 +80,6 @@ int search(unsigned int depth, int alpha, int beta, int ply) {
         }
     }
 
-    EntryFlag flag = ALPHA;
-
-    // move ordering
-    orderMoves(moves, moveCount, ply);
-
     // mate distance pruning
     // this is useful because we disable tt with mate scores so this gets the speed back
     int lowerBound = -MATE_SCORE + ply, upperBound = MATE_SCORE - ply;
@@ -82,8 +92,20 @@ int search(unsigned int depth, int alpha, int beta, int ply) {
         if (alpha >= upperBound) return upperBound;
     }
 
-    // PVS
+    // PV
     bool pvFound = false;
+    bool pvNode = beta - alpha > 1;
+
+    // Razoring
+    if (!pvNode && b.checks == 0 && depth == 1 && eval() + RAZOR_MARGIN < alpha) {
+            return searchCaptures(alpha, beta, ply);
+    }
+
+    // Move ordering
+    orderMoves(moves, moveCount, ply);
+
+
+    EntryFlag flag = ALPHA;
 
     // iterating through moves
     move bestMove;

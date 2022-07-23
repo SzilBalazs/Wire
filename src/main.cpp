@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
         uci::loop();
     } else if (mode == "bench") {
         bench::init();
-        bench::searchTest(true);
+        bench::searchTest();
     } else if (mode == "perft") {
         bench::init();
         bench::perftTest();

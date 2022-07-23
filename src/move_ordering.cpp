@@ -41,11 +41,9 @@ void orderMoves(move *moves, unsigned int moveCount, int ply) {
 
         // Captures
         else if (moves[i].isCapture()) {
-            int attacker = basePieceValues[b.pieces[moves[i].getFrom()]];
-            int victim = basePieceValues[decodePiece(moves[i].getCapturedPiece()).second];
-            if (attacker < victim) score += 8000;
-            else if (attacker == victim) score += 7000;
-            else score += 4000;
+            Piece attacker = b.pieces[moves[i].getFrom()];
+            Piece victim = b.pieces[moves[i].getTo()];
+            score += mmvlva[attacker][victim];
         }
 
 
