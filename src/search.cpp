@@ -12,22 +12,22 @@ int searchCaptures(int alpha, int beta, int ply) { // TODO maybe record somehow 
     if (stopSearch) return UNKNOWN_EVAL;
     nodeCount++;
 
-    int curr_eval = eval();
-    if (curr_eval >= beta) return beta;
-    if (alpha < curr_eval) alpha = curr_eval;
+    int currEval = eval();
+    if (currEval >= beta) return beta;
+    if (alpha < currEval) alpha = currEval;
 
     // Delta pruning
-    int BIG_DELTA = 1100;
+    int DELTA_MARGIN = 1100;
 
     // If we promote a pawn
     if (b.stm == WHITE && b.allPieceBB[WHITE] & b.pieceBB[PAWN] & rank7) {
-        BIG_DELTA += 1100;
+        DELTA_MARGIN += 1100;
     }
     else if (b.stm == BLACK && b.allPieceBB[BLACK] & b.pieceBB[PAWN] & rank2) {
-        BIG_DELTA += 1100;
+        DELTA_MARGIN += 1100;
     }
 
-    if (curr_eval + BIG_DELTA < alpha) {
+    if (currEval + DELTA_MARGIN < alpha) {
         return alpha;
     }
 
