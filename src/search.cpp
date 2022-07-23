@@ -16,6 +16,21 @@ int searchCaptures(int alpha, int beta, int ply) { // TODO maybe record somehow 
     if (curr_eval >= beta) return beta;
     if (alpha < curr_eval) alpha = curr_eval;
 
+    // Delta pruning
+    int BIG_DELTA = 1100;
+
+    // If we promote a pawn
+    if (b.stm == WHITE && b.allPieceBB[WHITE] & b.pieceBB[PAWN] & rank7) {
+        BIG_DELTA += 1100;
+    }
+    else if (b.stm == BLACK && b.allPieceBB[BLACK] & b.pieceBB[PAWN] & rank2) {
+        BIG_DELTA += 1100;
+    }
+
+    if (curr_eval + BIG_DELTA < alpha) {
+        return alpha;
+    }
+
     move moves[200];
     unsigned int moveCount = movegen::generate_moves(moves, true);
 
